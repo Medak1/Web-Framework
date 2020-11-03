@@ -35,22 +35,31 @@ while True:
 	print( f"Connected to {adrs}" )
 	request = "".encode( "utf-8" )
 	while True:
-		a = c.recv( 1024 )
+		a = c.recv( 2048 )
 		request += a
-		if a[len( a ) - 4:len( a )] == "\r\n\r\n".encode( "utf-8" ):
+		print(a)
+		if "\r\n\r\n".encode( "utf-8" ) in a or a.decode()=="":
+			print(True)
 			break
 	request = parse_request(request)
-	c.send( """<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>The fucking title</title>
-</head>
-<body>
-
-<h1>The fucking title</h1>
-<hr>
-<p>My paragraph</p>
-<img src="https://www.gravatar.com/avatar/f85efc388ebd6e216e7ab82dac1dc595?s=48&d=identicon&r=PG&f=1">
-</body>
-</html>""".encode() )
+	print(request)
+	html = """<!DOCTYPE html>
+	<html lang="en">
+	<head>
+	    <meta charset="UTF-8">
+	    <title>The fucking title</title>
+	</head>
+	<body>
+	
+	<h1>The fucking title</h1>
+	<hr>
+	<p>My paragraph</p>
+	<img src="https://www.gravatar.com/avatar/f85efc388ebd6e216e7ab82dac1dc595?s=48&d=identicon&r=PG&f=1">
+	</body>
+	</html>""".encode()
+	http_header = "HTTP/1.1 200 OK".encode()
+	content_type = "Content-Type: text/html".encode()
+	Content_Length = f"Content-Length: {len(html)}".encode()
+	c.send( "\r\n".encode().join([http_header,content_type,Content_Length,"\r\n".encode(),html]) )
+	c.close()
+	print("done")
