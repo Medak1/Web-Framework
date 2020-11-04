@@ -38,10 +38,14 @@ while True:
 		a = c.recv( 2048 )
 		request += a
 		print(a)
+
 		if "\r\n\r\n".encode( "utf-8" ) in a or a.decode()=="":
+			request2 = parse_request( request )
+			if "\r\n\r\n".encode( "utf-8" ) != a[len(a)-4:len(a)] and "Content-Length" in request2:
+				
 			print(True)
 			break
-	request = parse_request(request)
+
 	print(request)
 	html = """<!DOCTYPE html>
 	<html lang="en">
